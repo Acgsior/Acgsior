@@ -1,0 +1,46 @@
+# Logo
+logo_image_source: http://www.codeblocq.com/assets/projects/hexo-theme-anodyne/assets/anodyne.svg
+
+# Index Page
+index_banner_text: Excelsior.†
+index_banner_text_secondary: 有人问我粥可温，有人陪我立黄昏。
+index_font_awesome_icon_css: fa fa-fire
+
+# Header
+menu:
+  Home: /
+  Archives: /archives
+  About: /about.html
+  Contact: /contact.html
+
+# Post
+default_post_title: Untitled
+default_post_icon: fa-file-text-o
+
+# Archive Date Format
+archive_date_format: MMM YYYY
+archive_font_awesome_icon_css: fa-folder-open
+
+# About Widget
+about_widget_avatar_url: /images/acgsior.jpg
+about_widget_text: "Excelsior.†<br>有人问我粥可温，有人陪我立黄昏。"
+
+
+# Comments.
+comments:
+  # Disqus comments
+  disqus_shortname: 
+
+# Google Analytics Tracking ID
+google_analytics:
+
+# Social Media Platforms
+social_platforms:
+  - url: https://github.com/Acgsior
+    fa_icon: fa-github
+
+# Footer about
+footer_about: "@Excelsior.†. All right reserved"
+
+# Custom
+favicon: /images/favicon.png
