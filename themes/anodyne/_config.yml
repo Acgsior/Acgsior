@@ -23,7 +23,7 @@ archive_font_awesome_icon_css: fa-folder-open
 
 # About Widget
 about_widget_avatar_url: /images/acgsior.jpg
-about_widget_text: "Excelsior.†<br>有人问我粥可温，有人陪我立黄昏。"
+about_widget_text: "<div class='widget-name'>Excelsior.†</div><div class='widget-desc'>有人问我粥可温，有人陪我立黄昏。</div>"
 
 
 # Comments.

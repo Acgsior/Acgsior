@@ -1,7 +1,7 @@
 <div class="mt5 tc tl-l">
     <h3><%- __('categories') %></h3>
     <% item.categories.forEach(function(category) { %>
-        <p>
+        <p class="widget-categories">
             <a href="<%- config.root + category.path %>"><%= category.name %></a>
         </p>
     <% }) %>
