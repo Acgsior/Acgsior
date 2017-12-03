@@ -3,7 +3,7 @@
         <div class="dtc v-mid w-90 black-70">
             <div>
                 <% if(item.date) { %>
-                    <span class="f5 fw3 lh-copy pr4"><%= item.date.format(config.date_format) %></span> 
+                    <span class="f5 fw3 lh-copy pr4"><%= item.date.format(theme.archive_date_format) %></span> 
                 <% } %>
                 <% if (item.tags && item.tags.length) {
                     var tags = [];

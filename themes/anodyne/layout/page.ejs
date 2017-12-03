@@ -1,7 +1,7 @@
 <!-- Banner -->
 <%- partial('_partial/banner.ejs', {
     mainText: page.title || theme.default_post_title || __('default_post_title'),
-    secondaryText: page.date ? page.date.format(config.date_format) : '',
+    secondaryText: page.date ? page.date.format(theme.archive_date_format) : '',
     faIconCss: page.icon || theme.default_post_icon || ''
 }) %>
 
