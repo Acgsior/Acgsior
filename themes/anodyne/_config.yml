@@ -8,10 +8,9 @@ index_font_awesome_icon_css: fa fa-fire
 
 # Header
 menu:
-  Home: /
-  Archives: /archives
-  About: /about.html
-  Contact: /contact.html
+  首页: /
+  归档: /archives
+  关于: /about.html
 
 # Post
 default_post_title: Untitled
@@ -19,7 +18,7 @@ default_post_icon: fa-file-text-o
 
 # Archive Date Format
 archive_date_format: MMM YYYY
-archive_font_awesome_icon_css: fa-folder-open
+archive_font_awesome_icon_css: fa-book
 
 # About Widget
 about_widget_avatar_url: /images/acgsior.jpg
