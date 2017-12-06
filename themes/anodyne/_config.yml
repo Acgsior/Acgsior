@@ -10,7 +10,7 @@ index_font_awesome_icon_css: fa fa-fire
 menu:
   首页: /
   归档: /archives
-  关于: /about.html
+  关于: /about
 
 # Post
 default_post_title: Untitled
