@@ -2,7 +2,7 @@
 title: React setState in Component Lifecycle
 date: 2017-12-18 16:32:36
 tags: [React]
-categries: [前端攻城尸]
+categories: [前端攻城尸]
 icon: fa-code
 ---
 I noticed that the rule of eslint recommends that no `setState()` method invocation in specific lifecycle methods during previously eslint issues. However, I'm not quite sure what would happen if I use `setState()` method in the unrecommended methods.
