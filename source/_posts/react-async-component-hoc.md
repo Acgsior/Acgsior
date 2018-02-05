@@ -1,5 +1,5 @@
 ---
-title: React Async Component Hoc
+title: React Async Component HOC
 date: 2018-02-03 17:55:54
 tags: [React]
 categories: [前端攻城尸]
@@ -11,29 +11,24 @@ As we known that fetching the data in the `componentDidMount` method if the reac
 So a basicly implemention is:
 
 ````javascript
-type dataType = {
-  // ...
-}
-
 interface AsyncComponentProps {
-  loader: () => dataType;
+  loader: () => Promise<string>;
 }
 
 interface AsyncComponentState {
-  data: dataType;
+  data: string;
 }
 
 class AsyncComponent extends React.Component<AsyncComponentProps, AsyncComponentState> {
-  constructor(props:AsyncComponentProps) {
+  constructor(props: AsyncComponentProps) {
     super(props);
     
-    this.state = { data: {}};
+    this.state = { data: '' };
   }
   
   componentDidMount() {
   	const { loader } = this.props;
-    const data = loader();
-	this.setState({ data });
+    loader().then(data => this.setState({ data }));
   }
   
   render() {
@@ -52,4 +47,92 @@ shouldComponentUpdate() {
   return false;
 }
 ````
+
+An additional enhancement is displaying different views of fetching/fetched condition, e.g. display a loading bar during fetching data to avoid screen stays on the white page, then display the page correctly once the data fetched. 
+
+Just add a condition in `render` method.
+
+```` javascript
+  render() {
+    const { data } = this.state;
+    return (
+      <div>{data ? data : 'loading...'}</div>
+    );
+  }
+````
+
+It's tedious to write every async component like this. These things should have a more convenient solution.
+
+#### Inheritance vs High-Order Component(HOC)
+
+> A higher-order component (HOC) is an advanced technique in React for reusing component logic. HOCs are not part of the React API, per se. They are a pattern that emerges from React’s compositional nature. 
+>
+> Concretely, **a higher-order component is a function that takes a component and returns a new component.**
+
+In most simple way to explain the difference of inheritance and HOC:
+
+- Inheritance means the **IS-A** relationship, it's a super type object.
+- HOC actually is Composition, which means the **HAS-A** relationship, the behavior belongs to the other object.
+
+The advantages of HOC:
+
+- Isolation
+- Interoperability
+- Maintainability
+
+#### Unsound implemention of Async Component HOC
+
+It starts with finding a strange implemention of Redux action.
+
+```` javascript
+// actions/xxx.js
+let cachedPromise;
+
+const fetchxxxAsyncAction = () => dispatch => {
+  if (!cachedPromise) {
+    cachedPromise = dispatch(fetchxxx());
+  }
+  return cachedPromise;
+};
+````
+
+It's a typical singleton pattern, however, why he need to do such a thing?
+
+So I follow the vine to get the melon:
+
+```` javascipt
+// AsyncContent.jsx
+import createAsyncContent from './createAsyncContent';
+
+class AsyncContent extends React.PureComponent {
+  render() {
+    const {
+      loader,
+      ...
+    } = this.props;
+    const newComponent = createAsyncContent(() => loader().then(() => component),
+      { ... });
+    return React.createElement(newComponent);
+  }
+}
+
+// createAsyncContent.jsx
+export default (loader, { ... }) =>
+  class asyncContent extends React.Component {
+    componentDidMount() {
+      const component = isFunction(loader) ? loader() : loader;
+      return component.then(module => this.mounting && this.setState({ component: module }));
+    }
+    
+    render() {
+      const { component } = this.state;
+      return (
+        <div>
+          {component || this.renderLoader()}
+        </div>);
+    }
+  };
+````
+
+
 
