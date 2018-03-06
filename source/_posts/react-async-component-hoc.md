@@ -6,9 +6,9 @@ categories: [前端攻城尸]
 icon: fa-code
 ---
 
-As we known that fetching the remote data in the `componentDidMount` method if the react component depeonds on it.
+As we know that fetching the remote data in the `componentDidMount` method if the react component depends on it.
 
-So a basicly implemention is:
+So a basic implementation is:
 
 ````javascript
 interface AsyncComponentProps {
@@ -40,7 +40,7 @@ class AsyncComponent extends React.Component<AsyncComponentProps, AsyncComponent
 }
 ````
 
-Overwrite the `shouldComponentUpdate` if we keep the steady of component if it is only used for display.
+Overwrite the `shouldComponentUpdate` if we keep the steady of the component if it is only used for display.
 
 ````javascript
 shouldComponentUpdate() {
@@ -69,9 +69,9 @@ It's tedious to write every async component like this. These things should have 
 >
 > Concretely, **a higher-order component is a function that takes a component and returns a new component.**
 
-In most simple way to explain the difference of inheritance and HOC:
+In the most simple way to explain the difference between inheritance and HOC:
 
-- Inheritance means the **IS-A** relationship, it's a super type object.
+- Inheritance means the **IS-A** relationship, it's a supertype object.
 - HOC actually is Composition, which means the **HAS-A** relationship, the behavior belongs to the other object.
 
 The advantages of HOC:
@@ -80,9 +80,9 @@ The advantages of HOC:
 - Interoperability
 - Maintainability
 
-#### Unsound implemention of Async Component HOC
+#### Unsound Implementation of Async Component HOC
 
-This topic starts with finding a strange implemention of Redux action.
+This topic starts with finding a strange implementation of Redux action.
 
 ```` javascript
 // actions/xxx.js
@@ -139,16 +139,16 @@ export default (loader, { ... }) =>
   };
 
 ````
-Obviously it's not a good implementation with a number of defects:
+Obviously, it's not a good implementation with a number of defects:
 
 - `AsyncContent` is **strongly coupled** with `asyncContent` method wrapper, which means separating them makes no sense.
-- The first parameter of method `asyncContent` actually is defined as the structure a function which return a promise with a component as return value, so the check that `isFunction(loader) ? loader() : loader` is meaningless. (btw the naming of `component` may not appropriate.)
+- The first parameter of method `asyncContent` actually is defined as the structure a function which returns a promise with a component as the return value, so the check that `isFunction(loader) ? loader() : loader` is meaningless. (btw the naming of `component` may not appropriate.)
 - The `mounting` state value could be replaced by checking component.
-- The `React.createElement(newComponent)` of `AsyncContent` will always create a new wrapped async component once its parent component re-rendered, and it's the reason that the author creates a singleton reducx action.
+- The `React.createElement(newComponent)` of `AsyncContent` will always create a new wrapped async component once its parent component re-rendered, and it's the reason that the author creates a singleton redux action.
 
     - [React Top-Level API#createElement()](https://reactjs.org/docs/react-api.html#createelement)
 
-#### Proper Implemention of Async Component HOC (by TS)
+#### Proper Implementation of Async Component HOC (by TS)
 
 ```` javascript
 interface AsyncComponentState {
