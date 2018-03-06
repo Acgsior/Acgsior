@@ -6,7 +6,7 @@ categories: [前端攻城尸]
 icon: fa-code
 ---
 
-As we known that fetching the data in the `componentDidMount` method if the react component depeonds on.
+As we known that fetching the remote data in the `componentDidMount` method if the react component depeonds on it.
 
 So a basicly implemention is:
 
@@ -22,7 +22,7 @@ interface AsyncComponentState {
 class AsyncComponent extends React.Component<AsyncComponentProps, AsyncComponentState> {
   constructor(props: AsyncComponentProps) {
     super(props);
-    
+
     this.state = { data: '' };
   }
   
@@ -82,7 +82,7 @@ The advantages of HOC:
 
 #### Unsound implemention of Async Component HOC
 
-It starts with finding a strange implemention of Redux action.
+This topic starts with finding a strange implemention of Redux action.
 
 ```` javascript
 // actions/xxx.js
@@ -108,10 +108,10 @@ class AsyncContent extends React.PureComponent {
   render() {
     const {
       loader,
+      component,
       ...
     } = this.props;
-    const newComponent = createAsyncContent(() => loader().then(() => component),
-      { ... });
+    const newComponent = createAsyncContent(() => loader().then(() => component), { ... });
     return React.createElement(newComponent);
   }
 }
@@ -119,20 +119,91 @@ class AsyncContent extends React.PureComponent {
 // createAsyncContent.jsx
 export default (loader, { ... }) =>
   class asyncContent extends React.Component {
+    ...
+    
     componentDidMount() {
       const component = isFunction(loader) ? loader() : loader;
-      return component.then(module => this.mounting && this.setState({ component: module }));
+      
+      return component
+        .then(module => this.mounting && this.setState({ component: module }))
+        .catch(err => console.error(err));
     }
     
     render() {
       const { component } = this.state;
       return (
         <div>
-          {component || this.renderLoader()}
+          { component || this.renderLoader() }
         </div>);
     }
   };
+
+````
+Obviously it's not a good implementation with a number of defects:
+
+- `AsyncContent` is **strongly coupled** with `asyncContent` method wrapper, which means separating them makes no sense.
+- The first parameter of method `asyncContent` actually is defined as the structure a function which return a promise with a component as return value, so the check that `isFunction(loader) ? loader() : loader` is meaningless. (btw the naming of `component` may not appropriate.)
+- The `mounting` state value could be replaced by checking component.
+- The `React.createElement(newComponent)` of `AsyncContent` will always create a new wrapped async component once its parent component re-rendered, and it's the reason that the author creates a singleton reducx action.
+
+    - [React Top-Level API#createElement()](https://reactjs.org/docs/react-api.html#createelement)
+
+#### Proper Implemention of Async Component HOC (by TS)
+
+```` javascript
+interface AsyncComponentState {
+  component: React.ComponentClass | null;
+  componentProps: {};
+}
+
+const asyncComponent = (
+  importComponent: () => React.ComponentClass,
+  loader: () => Promise<{}>,
+  forceSteady: boolean = true) =>
+  class extends React.Component<{}, AsyncComponentState> {
+    constructor(props: {}) {
+      super(props);
+
+      this.state = {
+        component: null,
+        componentProps: {}
+      };
+    }
+
+    shouldComponentUpdate(nextProps: {}, nextState: AsyncComponentState) {
+      return nextState.component !== this.state.component || !forceSteady;
+    }
+
+    componentDidMount() {
+      const { component } = this.state;
+      
+      if (component === null) {
+        loader().then((componentProps) => {
+          this.setState({
+            component: importComponent(),
+            componentProps
+          });
+        });
+      }
+    }
+
+    render() {
+      const { component: C, componentProps } = this.state;
+      return (
+        <div>
+          {C !== null ? <C {...componentProps} /> : 'Loading...'}
+        </div>
+      );
+    }
+  };
+  
+````
+- Use promise loader function to load remote data and pass to component as props
+- Use force steady to make sure the component will not be re-render
+- How to use:
+
+```` javascript
+const AsyncNameComp1 = asyncComponent(() => NameComponent, () => mockFetch());
 ````
 
-
-
+- Find code at github project: [AsyncComponent](https://github.com/Acgsior/AcgsiorSamples/tree/master/src/AsyncComponent)
