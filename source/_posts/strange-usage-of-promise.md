@@ -1,17 +1,23 @@
 ---
-title: Strange Usage of Promise
+title: 奇怪的Promise用法
 date: 2017-12-28 15:27:41
 tags: [React, Frontend]
 categories: [前端攻城尸]
 icon: fa-code
 ---
-I found an "interesting" usage of Promise at work a few days ago. It looks like the author might be having misunderstood(or abused) the Promise.
+# 奇怪的Promise用法
 
-----
+### 原由
 
-See the pseudocode below:
+前几天我在工作项目中的代码里一个“有趣”的javascript Promise的用例，左思右想也不太明白为什么会需要这样使用Promise。
 
-````js
+### 这个有趣的Promise用例
+
+稍微整理了下代码，删掉了不重要的和业务逻辑部分。
+
+#### 伪代码：（React + Redux）
+
+````javascript
 // in redux action
 let _resolve;
 let _reject;
@@ -51,34 +57,36 @@ const action2 = () => {
   _reject(error);
 };
 
-
 ```` 
 
-Firstly, he defines a method to return a Promise object and makes the `resolve` and `reject` handler as global variable references in redux action.
+#### 分析
 
-Then he defines the process of resolve state and rejected state for Promise by calling the previous method.
+1. 定义了一个方法返回Promise对象，并在当前redux action的全局作用域下拿到了Promise的`resolve`和`reject`两个状态控制方法。（很奇怪是吧？）
+2. 定义了刚才的Promise分别在被`resolve`和被`reject`需要处理的逻辑。
+3. 在其他的action方法里通过触发Promise的`resolve`和`reject`来进行对应的异步操作，换句话说通过promise的状态来表示业务逻辑的成功或者失败。
 
-At last, he will trigger the `resolve` or `reject` handler in different actions(which means success or fail condition in business) to invoke the asynchronous operation in Promise.
+说实话我花了很长时间才明白他为什么要这样写，也是我第一次见到这样使用Promise。
 
-Actually, it's the first time I've seen the usage of Promise which took a long time to understand the meaning. 
+### 总结
 
-### Resolve is not the opposite of reject
+#### Resolve并不是Reject的相反面（Resolve is not the opposite of Reject）
 
-The issue is making the state of Promise dependents on extrinsic objects directly.
+事实上，Promise的`resolve`和`reject`状态的关系与逻辑上的true和false的关系并不相同，他们并不是完全的互斥关系。
 
-The Promise should determine its state by itself which means all asynchronous operation need be promise wrapped. 
+因为在Promise链中任何的异常／错误都会导致promise直接进入`reject`状态，调用链后最近的`catch`块的逻辑；但是用promise的`reject`来处理业务上的失败逻辑的时候，真的能正确的处理系统异常的情况吗？
 
-It's impossible to control the state completely from the outside even because the `resolve` is not the **opposite** of `reject`. In short, the state `resolve` and state `reject` is not the mutex relationship.
+#### 这样做不好的其他理由
 
-For example, an exception met in `then` block changes the state to `reject`, but the business fail logic in `catch` block should not be able to handle it.
+- 使Promise直接依赖外部对象的状态，而不是通常情况下的直接由自己决定。与此同时，Promise的异步调用链的代码被拆散，散落在不同的地方，结构凌乱。
+- 这样的代码难以被理解和调试，同时也很难对结果进行预期和控制。
 
-Although we could use the solution above if we CAN make sure the code is safety, however, the code is still hard to read.
+#### 可以这样做
 
-So we should really split the business success and fail to different the promise chain which means let the action1/action2 to link the `then` block after the Promise which `getPromise` method returned.
+想要稍微改进下这段代码其实很简单：拆分`resolve`和`reject`代码分别给各自的Promise。
 
-It's that simple.
+对于上面的伪代码来说，直接让action1/action2各自拿到Promise对象然后通过`then`串联Promise链就可以了。
 
-##### References
+#### 你可能需要
 
 - [MDN Promise docs](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise#Creating_a_Promise)
 - [Promises: resolve is not the opposite of reject](https://jakearchibald.com/2014/resolve-not-opposite-of-reject/)
