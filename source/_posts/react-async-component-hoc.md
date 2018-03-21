@@ -77,12 +77,8 @@ shouldComponentUpdate() {
 首先引用facebook官方的文档。
 
 > A higher-order component (HOC) is an advanced technique in React for reusing component logic. HOCs are not part of the React API, per se. They are a pattern that emerges from React’s compositional nature. 
-> 
 > 高阶组件是React重用component逻辑的一种高级技巧。本质上来说，HOC并不是React API的一部分，而是React的组合特性的模式体现。
-> 
-> 
 > Concretely, **a higher-order component is a function that takes a component and returns a new component.**
-> 
 > 具体而言，**高阶组件是输入一个component并返回一个新的component的方法**。
 
 在我们需要逻辑重用的时候，通常需要考虑的是选择继承还是组合：
